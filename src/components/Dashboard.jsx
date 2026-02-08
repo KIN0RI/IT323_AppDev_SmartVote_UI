@@ -21,14 +21,14 @@ function Dashboard() {
 
   return (
     <main className="sv-dashboard">
-      {/* FULL-WIDTH HEADER */}
+      
       <header className="sv-header">
         <span className="sv-header-badge">Live Election</span>
         <h1>USTP SmartVote</h1>
         <p>Student Election Monitoring Dashboard</p>
       </header>
 
-      {/* FULLSCREEN CONTENT AREA */}
+      
       <div className="sv-content">
         <section className="sv-progress-section">
           <div className="sv-progress-label">

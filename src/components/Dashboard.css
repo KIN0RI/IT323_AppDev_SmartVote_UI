@@ -24,16 +24,12 @@
   font-family: var(--sv-font);
 }
 
-/* FULLSCREEN CONTENT */
+
 .sv-content {
-  max-width: 1600px; /* dashboard width, not blog width */
+  max-width: 1600px; 
   margin: 0 auto;
   padding: 32px 32px 48px;
 }
-
-/* KEEP ALL YOUR ORIGINAL STYLES BELOW */
-/* (no visual changes) */
-
 
 
 
