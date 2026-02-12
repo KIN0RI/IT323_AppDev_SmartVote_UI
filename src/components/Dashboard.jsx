@@ -1,4 +1,9 @@
+import { useState } from "react";
 import "./Dashboard.css";
+
+import StatCard from "./StatCard";
+import CandidateRow from "./CandidateRow";
+import MonitoringInsight from "./MonitoringInsight";
 
 function Dashboard() {
   const electionStats = {
@@ -7,34 +12,54 @@ function Dashboard() {
     remainingVoters: 340,
   };
 
+  
   const candidates = [
     { id: 1, name: "Ronald Yu", position: "President", votes: 320 },
     { id: 2, name: "Vhon Salilo", position: "President", votes: 280 },
     { id: 3, name: "Dan Ivan Labin", position: "Vice President", votes: 260 },
   ];
 
+ 
+  const insights = [
+    {
+      id: 1,
+      title: "Anomaly Detection",
+      status: "No suspicious voting activity detected",
+      confidence: 91,
+    },
+    {
+      id: 2,
+      title: "Turnout Pattern Analysis",
+      status: "Normal participation trend observed",
+      confidence: 84,
+    },
+  ];
+
+  
   const turnoutPercent = Math.round(
     (electionStats.votesCast / electionStats.totalVoters) * 100
   );
 
   const maxVotes = Math.max(...candidates.map((c) => c.votes));
 
+  
+  const [showInsights, setShowInsights] = useState(false);
+
   return (
     <main className="sv-dashboard">
-      
       <header className="sv-header">
         <span className="sv-header-badge">Live Election</span>
         <h1>USTP SmartVote</h1>
-        <p>Student Election Monitoring Dashboard</p>
+        <p>QR Code–Based Student Election Monitoring Dashboard</p>
       </header>
 
-      
       <div className="sv-content">
         <section className="sv-progress-section">
           <div className="sv-progress-label">
             <span>Voter Turnout</span>
             <strong>{turnoutPercent}%</strong>
           </div>
+
           <div className="sv-progress-track">
             <div
               className="sv-progress-fill"
@@ -44,29 +69,23 @@ function Dashboard() {
         </section>
 
         <section className="sv-stats">
-          <article className="sv-stat-card">
-            <div className="sv-stat-icon sv-stat-icon--voters">👥</div>
-            <h3>Total Voters</h3>
-            <p className="sv-stat-value">
-              {electionStats.totalVoters.toLocaleString()}
-            </p>
-          </article>
+          <StatCard
+            icon="👥"
+            title="Total Voters"
+            value={electionStats.totalVoters.toLocaleString()}
+          />
 
-          <article className="sv-stat-card">
-            <div className="sv-stat-icon sv-stat-icon--cast">✅</div>
-            <h3>Votes Cast</h3>
-            <p className="sv-stat-value">
-              {electionStats.votesCast.toLocaleString()}
-            </p>
-          </article>
+          <StatCard
+            icon="✅"
+            title="Votes Cast"
+            value={electionStats.votesCast.toLocaleString()}
+          />
 
-          <article className="sv-stat-card">
-            <div className="sv-stat-icon sv-stat-icon--remaining">⏳</div>
-            <h3>Remaining</h3>
-            <p className="sv-stat-value">
-              {electionStats.remainingVoters.toLocaleString()}
-            </p>
-          </article>
+          <StatCard
+            icon="⏳"
+            title="Remaining Voters"
+            value={electionStats.remainingVoters.toLocaleString()}
+          />
         </section>
 
         <section className="sv-tally-section">
@@ -83,30 +102,47 @@ function Dashboard() {
                 <th>Votes</th>
               </tr>
             </thead>
+
             <tbody>
-              {candidates.map((c) => (
-                <tr key={c.id}>
-                  <td className="sv-candidate-name">{c.name}</td>
-                  <td>
-                    <span className="sv-candidate-position">{c.position}</span>
-                  </td>
-                  <td>
-                    <div className="sv-vote-bar-bg">
-                      <div
-                        className="sv-vote-bar"
-                        style={{ width: `${(c.votes / maxVotes) * 100}%` }}
-                      />
-                    </div>
-                  </td>
-                  <td className="sv-vote-count">{c.votes}</td>
-                </tr>
+              {candidates.map((candidate) => (
+                <CandidateRow
+                  key={candidate.id}
+                  candidate={candidate}
+                  maxVotes={maxVotes}
+                />
               ))}
             </tbody>
           </table>
         </section>
 
+        <section className="sv-monitoring">
+          <div className="sv-monitoring-header">
+            <h2>AI Monitoring Insights</h2>
+
+            <button
+              onClick={() => setShowInsights(!showInsights)}
+            >
+              {showInsights ? "Hide Insights" : "Show Insights"}
+            </button>
+          </div>
+
+          {showInsights && (
+            <div className="sv-insight-grid">
+              {insights.map((item) => (
+                <MonitoringInsight
+                  key={item.id}
+                  title={item.title}
+                  status={item.status}
+                  confidence={item.confidence}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+
         <footer className="sv-footer">
-          USTP SmartVote © 2026 — QR Code-Based Voting System
+          USTP SmartVote © 2026 — Database-Driven QR Code Voting System with
+          AI-Assisted Monitoring
         </footer>
       </div>
     </main>
