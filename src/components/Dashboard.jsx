@@ -7,9 +7,9 @@ import MonitoringInsight from "./MonitoringInsight";
 
 function Dashboard() {
   const electionStats = {
-    totalVoters: 1200,
-    votesCast: 860,
-    remainingVoters: 340,
+    totalVoters: 2000,
+    votesCast: 1895,
+    remainingVoters: 105,
   };
 
   
@@ -17,6 +17,13 @@ function Dashboard() {
     { id: 1, name: "Ronald Yu", position: "President", votes: 320 },
     { id: 2, name: "Vhon Salilo", position: "President", votes: 280 },
     { id: 3, name: "Dan Ivan Labin", position: "Vice President", votes: 260 },
+    { id: 4, name: "Christian Paul Bahian", position: "Vice President", votes: 200 },
+    { id: 5, name: "Nepthalie Brynt Asinero", position: "Secretary", votes: 180 },
+    { id: 6, name: "Dan Ronald Salilo", position: "Secretary", votes: 150 },
+    { id: 7, name: "Christian Ivan Yu", position: "Treasurer", votes: 145 },
+    { id: 8, name: "Ronald Paul Asinero", position: "Treasurer", votes: 130 },
+    { id: 9, name: "Vhon Brynt Labin", position: "Auditor", votes: 120 },
+    { id: 10, name: "Dan Angelico Bahian", position: "Auditor", votes: 110 },
   ];
 
  
