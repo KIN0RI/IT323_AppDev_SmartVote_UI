@@ -5,6 +5,8 @@ import StatCard from "./StatCard";
 import CandidateRow from "./CandidateRow";
 import MonitoringInsight from "./MonitoringInsight";
 
+import ustpLogo from "../assets/logo.png";
+
 function Dashboard() {
   const electionStats = {
     totalVoters: 1200,
@@ -49,7 +51,14 @@ function Dashboard() {
     <main className="sv-dashboard">
       <header className="sv-header">
         <span className="sv-header-badge">Live Election</span>
-        <h1>USTP SmartVote</h1>
+        <div className="sv-header-brand">
+          <img 
+            src={ustpLogo}
+            alt="USTP Logo" 
+            className="sv-logo" 
+          />
+          <h1>USTP SmartVote</h1>
+        </div>
         <p>QR Code–Based Student Election Monitoring Dashboard</p>
       </header>
 
