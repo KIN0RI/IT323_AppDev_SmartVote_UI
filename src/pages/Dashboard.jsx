@@ -53,7 +53,7 @@ function Dashboard() {
   return (
     <>
 
-      
+      <Navbar />
 
       <main className="sv-dashboard">
         <div className="sv-content">
