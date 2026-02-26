@@ -1,9 +1,10 @@
 import { useState } from "react";
-import VoteForm from "../components/forms/VoteForm";
-import Header from "../components/layout/Header";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 
 function Vote() {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(0);
   const [candidates, setCandidates] = useState([
     { id: 1, name: "Ronald Yu", position: "President", votes: 320 },
     { id: 2, name: "Vhon Salilo", position: "President", votes: 280 },
@@ -17,25 +18,104 @@ function Vote() {
     { id: 10, name: "Dan Angelico Bahian", position: "Auditor", votes: 110 },
   ]);
 
+  const positions = [
+    "President",
+    "Vice President",
+    "Secretary",
+    "Treasurer",
+    "Auditor",
+  ];
+
+  const currentPosition = positions[step];
+  const isDone = step >= positions.length;
+
+  const currentCandidates = candidates.filter(
+    (c) => c.position === currentPosition
+  );
+
   const handleVote = (candidateId) => {
     setCandidates((prev) =>
       prev.map((c) =>
         c.id === candidateId ? { ...c, votes: c.votes + 1 } : c
       )
     );
+    setStep(step + 1);
   };
 
   return (
     <div className="sv-app">
-      <Header />
       <Navbar />
       <main className="sv-page">
         <div className="sv-page-container">
-          <section className="sv-page-header">
-            <h1>Cast Your Vote</h1>
-            <p>Select your candidate for each position</p>
-          </section>
-          <VoteForm candidates={candidates} onVote={handleVote} />
+
+          {isDone ? (
+            <section className="sv-vote-success">
+              <span className="sv-vote-success-icon">🎉</span>
+              <h2>Voting Completed!</h2>
+              <p>Your votes have been recorded successfully.</p>
+              <button
+                className="sv-btn sv-btn-primary"
+                onClick={() => navigate("/StudentDashboard")}
+                style={{ marginTop: "20px" }}
+              >
+                Back to Dashboard
+              </button>
+            </section>
+          ) : (
+            <>
+              {/* Progress indicator */}
+              <section className="sv-page-header">
+                <h1>Cast Your Vote</h1>
+                <p>
+                  Step {step + 1} of {positions.length} — Voting for{" "}
+                  <strong>{currentPosition}</strong>
+                </p>
+              </section>
+
+              {/* Progress bar */}
+              <div className="sv-vote-progress">
+                {positions.map((pos, index) => (
+                  <div
+                    key={pos}
+                    className={`sv-vote-step ${
+                      index < step
+                        ? "sv-step-done"
+                        : index === step
+                        ? "sv-step-active"
+                        : "sv-step-pending"
+                    }`}
+                  >
+                    {index < step ? "✓" : index + 1}
+                    <span>{pos}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Candidate cards */}
+              <div className="sv-candidates">
+                {currentCandidates.map((candidate) => (
+                  <div key={candidate.id} className="sv-candidate-card">
+                    <div className="sv-candidate-avatar">
+                      {candidate.name.charAt(0)}
+                    </div>
+                    <div className="sv-candidate-info">
+                      <h3>{candidate.name}</h3>
+                      <span className="sv-candidate-position">
+                        {candidate.position}
+                      </span>
+                    </div>
+                    <button
+                      className="sv-btn sv-btn-primary"
+                      onClick={() => handleVote(candidate.id)}
+                    >
+                      Vote
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
         </div>
       </main>
     </div>
