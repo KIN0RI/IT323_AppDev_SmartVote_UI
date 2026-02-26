@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "../styles/Dashboard.css";
 
-import Header from "../components/layout/Header";
 import Navbar from "../components/layout/Navbar";
 
 import StatCard from "../components/StatCard";
@@ -54,7 +53,7 @@ function Dashboard() {
   return (
     <>
 
-      <Header />
+      
 
       <main className="sv-dashboard">
         <div className="sv-content">
