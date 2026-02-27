@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 function VoteForm({ candidates, onVote }) {
-  // store selected candidate per position
+
   const [selected, setSelected] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -17,7 +17,7 @@ function VoteForm({ candidates, onVote }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Make sure every position has a vote
+
     if (positions.every((pos) => selected[pos])) {
       Object.values(selected).forEach((id) => onVote(id));
       setSubmitted(true);

@@ -63,7 +63,7 @@ function Vote() {
             </section>
           ) : (
             <>
-              {/* Progress indicator */}
+        
               <section className="sv-page-header">
                 <h1>Cast Your Vote</h1>
                 <p>
@@ -72,7 +72,7 @@ function Vote() {
                 </p>
               </section>
 
-              {/* Progress bar */}
+        
               <div className="sv-vote-progress">
                 {positions.map((pos, index) => (
                   <div
@@ -91,7 +91,7 @@ function Vote() {
                 ))}
               </div>
 
-              {/* Candidate cards */}
+  
               <div className="sv-candidates">
                 {currentCandidates.map((candidate) => (
                   <div key={candidate.id} className="sv-candidate-card">
