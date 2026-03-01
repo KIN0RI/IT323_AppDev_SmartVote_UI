@@ -53,7 +53,7 @@ function Vote() {
               <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "20px" }}>
                 <button
                   className="sv-btn sv-btn-primary"
-                  onClick={() => navigate("/vote-analysis", { state: { votes: votedChoices } })}
+                  onClick={() => navigate("/VoteAnalysis", { state: { votes: votedChoices } })}
                 >
                   View Vote Analysis
                 </button>

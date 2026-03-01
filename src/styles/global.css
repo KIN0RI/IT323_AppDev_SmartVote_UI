@@ -4,6 +4,8 @@
   background: var(--sv-bg, #f5f7fb);
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   color: #1e293b;
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -232,6 +234,7 @@
 
 .sv-page {
   padding: 0;
+  flex: 1;
 }
 
 .sv-page-center {

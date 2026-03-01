@@ -28,7 +28,8 @@ function VoterLog() {
   return (
     <div className="sv-app">
       <Navbar />
-      <main className="sv-dashboard">
+
+      <main className="sv-dashboard" style={{ flex: 1 }}>
         <div className="sv-content">
 
           <div className="sv-monitoring-header">
@@ -98,11 +99,13 @@ function VoterLog() {
           </section>
 
         </div>
-
-        <footer className="sv-footer">
-          USTP SmartVote © 2026 — Database-Driven QR Code Voting System with AI-Assisted Monitoring
-        </footer>
       </main>
+
+    
+      <footer className="sv-footer">
+        USTP SmartVote © 2026 — Database-Driven QR Code Voting System with AI-Assisted Monitoring
+      </footer>
+
     </div>
   );
 }
