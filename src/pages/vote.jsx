@@ -1,30 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
+import useCandidates from "../hooks/useCandidates";
+
+const positions = [
+  "President",
+  "Vice President",
+  "Secretary",
+  "Treasurer",
+  "Auditor",
+];
 
 function Vote() {
   const navigate = useNavigate();
+  const { candidates, castVote } = useCandidates();
   const [step, setStep] = useState(0);
-  const [candidates, setCandidates] = useState([
-    { id: 1, name: "Ronald Yu", position: "President", votes: 320 },
-    { id: 2, name: "Vhon Salilo", position: "President", votes: 280 },
-    { id: 3, name: "Dan Ivan Labin", position: "Vice President", votes: 260 },
-    { id: 4, name: "Christian Paul Bahian", position: "Vice President", votes: 200 },
-    { id: 5, name: "Nepthalie Brynt Asinero", position: "Secretary", votes: 180 },
-    { id: 6, name: "Dan Ronald Salilo", position: "Secretary", votes: 150 },
-    { id: 7, name: "Christian Ivan Yu", position: "Treasurer", votes: 145 },
-    { id: 8, name: "Ronald Paul Asinero", position: "Treasurer", votes: 130 },
-    { id: 9, name: "Vhon Brynt Labin", position: "Auditor", votes: 120 },
-    { id: 10, name: "Dan Angelico Bahian", position: "Auditor", votes: 110 },
-  ]);
-
-  const positions = [
-    "President",
-    "Vice President",
-    "Secretary",
-    "Treasurer",
-    "Auditor",
-  ];
+  const [votedChoices, setVotedChoices] = useState([]);
 
   const currentPosition = positions[step];
   const isDone = step >= positions.length;
@@ -34,12 +25,18 @@ function Vote() {
   );
 
   const handleVote = (candidateId) => {
-    setCandidates((prev) =>
-      prev.map((c) =>
-        c.id === candidateId ? { ...c, votes: c.votes + 1 } : c
-      )
-    );
+    const chosen = candidates.find((c) => c.id === candidateId);
+    if (!chosen) return;
+    castVote(candidateId);
+    setVotedChoices((prev) => [
+      ...prev,
+      { position: chosen.position, candidateName: chosen.name },
+    ]);
     setStep(step + 1);
+  };
+
+  const handleBack = () => {
+    if (step > 0) setStep(step - 1);
   };
 
   return (
@@ -53,17 +50,23 @@ function Vote() {
               <span className="sv-vote-success-icon">🎉</span>
               <h2>Voting Completed!</h2>
               <p>Your votes have been recorded successfully.</p>
-              <button
-                className="sv-btn sv-btn-primary"
-                onClick={() => navigate("/StudentDashboard")}
-                style={{ marginTop: "20px" }}
-              >
-                Back to Dashboard
-              </button>
+              <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "20px" }}>
+                <button
+                  className="sv-btn sv-btn-primary"
+                  onClick={() => navigate("/vote-analysis", { state: { votes: votedChoices } })}
+                >
+                  View Vote Analysis
+                </button>
+                <button
+                  className="sv-btn sv-btn-outline"
+                  onClick={() => navigate("/student-dashboard")}
+                >
+                  Back to Dashboard
+                </button>
+              </div>
             </section>
           ) : (
             <>
-        
               <section className="sv-page-header">
                 <h1>Cast Your Vote</h1>
                 <p>
@@ -72,7 +75,6 @@ function Vote() {
                 </p>
               </section>
 
-        
               <div className="sv-vote-progress">
                 {positions.map((pos, index) => (
                   <div
@@ -91,7 +93,6 @@ function Vote() {
                 ))}
               </div>
 
-  
               <div className="sv-candidates">
                 {currentCandidates.map((candidate) => (
                   <div key={candidate.id} className="sv-candidate-card">
@@ -113,6 +114,14 @@ function Vote() {
                   </div>
                 ))}
               </div>
+
+              {step > 0 && (
+                <div style={{ marginTop: "20px", textAlign: "center" }}>
+                  <button className="sv-btn sv-btn-outline" onClick={handleBack}>
+                    ← Back to {positions[step - 1]}
+                  </button>
+                </div>
+              )}
             </>
           )}
 

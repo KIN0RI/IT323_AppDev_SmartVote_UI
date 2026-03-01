@@ -1,102 +1,96 @@
 import { useState } from "react";
+import Navbar from "../components/layout/Navbar";
+import StatCard from "../components/StatCard";
+import MonitoringInsight from "../components/MonitoringInsight";
+import useCandidates from "../hooks/useCandidates";
 import "../styles/Dashboard.css";
 
-import Navbar from "../components/layout/Navbar";
+const positions = [
+  "President",
+  "Vice President",
+  "Secretary",
+  "Treasurer",
+  "Auditor",
+];
 
-import StatCard from "../components/StatCard";
-import CandidateRow from "../components/CandidateRow";
-import MonitoringInsight from "../components/MonitoringInsight";
+const insights = [
+  {
+    id: 1,
+    title: "Anomaly Detection",
+    status: "No suspicious voting activity detected",
+    confidence: 91,
+  },
+  {
+    id: 2,
+    title: "Turnout Pattern Analysis",
+    status: "Normal participation trend observed",
+    confidence: 84,
+  },
+];
 
-function Dashboard() {
+function AdminDashboard() {
+  const { candidates } = useCandidates();
+  const [showInsights, setShowInsights] = useState(false);
+  const [activePosition, setActivePosition] = useState("President");
+
   const electionStats = {
     totalVoters: 2000,
     votesCast: 1895,
     remainingVoters: 105,
   };
 
-  const candidates = [
-    { id: 1, name: "Ronald Yu", position: "President", votes: 320 },
-    { id: 2, name: "Vhon Salilo", position: "President", votes: 280 },
-    { id: 3, name: "Dan Ivan Labin", position: "Vice President", votes: 260 },
-    { id: 4, name: "Christian Paul Bahian", position: "Vice President", votes: 200 },
-    { id: 5, name: "Nepthalie Brynt Asinero", position: "Secretary", votes: 180 },
-    { id: 6, name: "Dan Ronald Salilo", position: "Secretary", votes: 150 },
-    { id: 7, name: "Christian Ivan Yu", position: "Treasurer", votes: 145 },
-    { id: 8, name: "Ronald Paul Asinero", position: "Treasurer", votes: 130 },
-    { id: 9, name: "Vhon Brynt Labin", position: "Auditor", votes: 120 },
-    { id: 10, name: "Dan Angelico Bahian", position: "Auditor", votes: 110 },
-  ];
-
-  const insights = [
-    {
-      id: 1,
-      title: "Anomaly Detection",
-      status: "No suspicious voting activity detected",
-      confidence: 91,
-    },
-    {
-      id: 2,
-      title: "Turnout Pattern Analysis",
-      status: "Normal participation trend observed",
-      confidence: 84,
-    },
-  ];
-
   const turnoutPercent = Math.round(
     (electionStats.votesCast / electionStats.totalVoters) * 100
   );
 
-  const maxVotes = Math.max(...candidates.map((c) => c.votes));
+  const filteredCandidates = candidates.filter(
+    (c) => c.position === activePosition
+  );
 
-  const [showInsights, setShowInsights] = useState(false);
+  const maxVotes = Math.max(...filteredCandidates.map((c) => c.votes));
 
   return (
-    <>
-
+    <div className="sv-app">
       <Navbar />
-
       <main className="sv-dashboard">
-        <div className="sv-content">
+        <header className="sv-header">
+          <span className="sv-header-badge">Admin Panel</span>
+          <h1>USTP SmartVote</h1>
+          <p>Election Monitoring Dashboard</p>
+        </header>
 
+        <div className="sv-content">
           <section className="sv-progress-section">
             <div className="sv-progress-label">
               <span>Voter Turnout</span>
               <strong>{turnoutPercent}%</strong>
             </div>
-
             <div className="sv-progress-track">
-              <div
-                className="sv-progress-fill"
-                style={{ width: `${turnoutPercent}%` }}
-              />
+              <div className="sv-progress-fill" style={{ width: `${turnoutPercent}%` }} />
             </div>
           </section>
 
-
           <section className="sv-stats">
-            <StatCard
-              icon="👥"
-              title="Total Voters"
-              value={electionStats.totalVoters.toLocaleString()}
-            />
-
-            <StatCard
-              icon="✅"
-              title="Votes Cast"
-              value={electionStats.votesCast.toLocaleString()}
-            />
-
-            <StatCard
-              icon="⏳"
-              title="Remaining Voters"
-              value={electionStats.remainingVoters.toLocaleString()}
-            />
+            <StatCard icon="👥" title="Total Voters" value={electionStats.totalVoters.toLocaleString()} />
+            <StatCard icon="✅" title="Votes Cast" value={electionStats.votesCast.toLocaleString()} />
+            <StatCard icon="⏳" title="Remaining" value={electionStats.remainingVoters.toLocaleString()} />
           </section>
-
 
           <section className="sv-tally-section">
             <div className="sv-tally-header">
               <h2>Candidate Vote Tally</h2>
+            </div>
+
+            <div className="sv-position-tabs">
+              {positions.map((pos) => (
+                <button
+                  key={pos}
+                  className={`sv-position-tab ${activePosition === pos ? "sv-tab-active" : ""}`}
+                  onClick={() => setActivePosition(pos)}
+                >
+                  {pos}
+                </button>
+              ))}
             </div>
 
             <table className="sv-table">
@@ -108,29 +102,35 @@ function Dashboard() {
                   <th>Votes</th>
                 </tr>
               </thead>
-
               <tbody>
-                {candidates.map((candidate) => (
-                  <CandidateRow
-                    key={candidate.id}
-                    candidate={candidate}
-                    maxVotes={maxVotes}
-                  />
+                {filteredCandidates.map((candidate) => (
+                  <tr key={candidate.id}>
+                    <td data-label="Candidate" className="sv-candidate-name">{candidate.name}</td>
+                    <td data-label="Position">
+                      <span className="sv-candidate-position">{candidate.position}</span>
+                    </td>
+                    <td data-label="Progress">
+                      <div className="sv-vote-bar-bg">
+                        <div
+                          className="sv-vote-bar"
+                          style={{ width: `${Math.round((candidate.votes / maxVotes) * 100)}%` }}
+                        />
+                      </div>
+                    </td>
+                    <td data-label="Votes" className="sv-vote-count">{candidate.votes}</td>
+                  </tr>
                 ))}
               </tbody>
             </table>
           </section>
 
-
           <section className="sv-monitoring">
             <div className="sv-monitoring-header">
               <h2>AI Monitoring Insights</h2>
-
               <button onClick={() => setShowInsights(!showInsights)}>
                 {showInsights ? "Hide Insights" : "Show Insights"}
               </button>
             </div>
-
             {showInsights && (
               <div className="sv-insight-grid">
                 {insights.map((item) => (
@@ -148,12 +148,11 @@ function Dashboard() {
         </div>
 
         <footer className="sv-footer">
-          USTP SmartVote © 2026 — Database-Driven QR Code Voting System with
-          AI-Assisted Monitoring
+          USTP SmartVote © 2026 — Database-Driven QR Code Voting System with AI-Assisted Monitoring
         </footer>
       </main>
-    </>
+    </div>
   );
 }
 
-export default Dashboard;
+export default AdminDashboard;

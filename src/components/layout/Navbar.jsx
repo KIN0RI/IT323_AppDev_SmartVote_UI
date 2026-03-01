@@ -1,13 +1,31 @@
-import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 
 function Navbar() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const [role, setRole] = useState(() => localStorage.getItem("userRole") || "student");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const role = localStorage.getItem("userRole") || "student";
-  const dashboardPath = role === "admin" ? "/Dashboard" : "/StudentDashboard";
+  useEffect(() => {
+    const handleStorage = () => setRole(localStorage.getItem("userRole") || "student");
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const dashboardPath = role === "admin" ? "/dashboard" : "/StudentDashboard";
+  const roleLabel = role === "admin" ? "Admin" : "Student";
 
   const handleLogout = () => {
     localStorage.removeItem("userRole");
@@ -16,23 +34,23 @@ function Navbar() {
   };
 
   return (
-    <header className="sv-navbar">
-      <div className="sv-navbar-inner">
+    <header className="sv-topbar">
+      <div className="sv-topbar-inner">
 
-        {/* Left - Brand with logo */}
-        <div className="sv-navbar-brand">
-          <img src={logo} alt="USTP Logo" className="sv-navbar-logo-img" />
-          <span className="sv-navbar-title">USTP SmartVote</span>
-        </div>
+        {/* Left - Brand */}
+        <Link to="/" className="sv-logo-link">
+          <img src={logo} alt="USTP Logo" className="sv-logo-img" />
+          <span className="sv-logo-text">USTP SmartVote</span>
+        </Link>
 
         {/* Center - Nav Links */}
-        <nav>
-          <ul className="sv-nav-list">
+        <nav className="sv-topbar-nav">
+          <ul className="sv-topbar-nav-list">
             <li>
               <NavLink
                 to={dashboardPath}
                 className={({ isActive }) =>
-                  `sv-nav-item ${isActive ? "sv-nav-active" : ""}`
+                  `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
                 }
               >
                 Dashboard
@@ -43,10 +61,34 @@ function Navbar() {
                 <NavLink
                   to="/vote"
                   className={({ isActive }) =>
-                    `sv-nav-item ${isActive ? "sv-nav-active" : ""}`
+                    `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
                   }
                 >
                   Vote
+                </NavLink>
+              </li>
+            )}
+            {role === "student" && (
+              <li>
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) =>
+                    `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
+                  }
+                >
+                  Profile
+                </NavLink>
+              </li>
+            )}
+            {role === "admin" && (
+              <li>
+                <NavLink
+                  to="/voter-log"
+                  className={({ isActive }) =>
+                    `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
+                  }
+                >
+                  Voter Log
                 </NavLink>
               </li>
             )}
@@ -54,36 +96,38 @@ function Navbar() {
         </nav>
 
         {/* Right - Profile Dropdown */}
-        <div className="sv-profile">
+        <div className="sv-profile-dropdown" ref={dropdownRef}>
           <button
             className="sv-profile-btn"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
+            onClick={() => setDropdownOpen((prev) => !prev)}
           >
-            <div className="sv-avatar">
-              {role === "admin" ? "AD" : "ST"}
-            </div>
-            <span className="sv-profile-name">
-              {role === "admin" ? "Administrator" : "Student User"}
-            </span>
-            <span className="sv-profile-caret">{dropdownOpen ? "▲" : "▼"}</span>
+            <span className="sv-profile-avatar">👤</span>
+            <span className="sv-profile-role">{roleLabel}</span>
+            <span className={`sv-profile-chevron ${dropdownOpen ? "sv-chevron-open" : ""}`}>▾</span>
           </button>
 
           {dropdownOpen && (
-            <div className="sv-dropdown">
-              <hr className="sv-dropdown-divider" />
-              <button
-                className="sv-dropdown-item"
-                onClick={() => setDropdownOpen(false)}
-              >
-                👤 My Profile
-              </button>
-              <button
-                className="sv-dropdown-item sv-dropdown-logout"
-                onClick={handleLogout}
-              >
-                🔑 Log Out
-              </button>
-            </div>
+            <ul className="sv-profile-menu">
+              {role === "student" && (
+                <li>
+                  <Link
+                    to="/profile"
+                    className="sv-profile-menu-item"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    My Profile
+                  </Link>
+                </li>
+              )}
+              <li>
+                <button
+                  className="sv-profile-menu-item sv-profile-menu-logout"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </li>
+            </ul>
           )}
         </div>
 
