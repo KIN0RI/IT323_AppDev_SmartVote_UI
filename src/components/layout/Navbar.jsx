@@ -36,14 +36,11 @@ function Navbar() {
   return (
     <header className="sv-topbar">
       <div className="sv-topbar-inner">
-
-        {/* Left - Brand */}
         <Link to="/" className="sv-logo-link">
           <img src={logo} alt="USTP Logo" className="sv-logo-img" />
           <span className="sv-logo-text">USTP SmartVote</span>
         </Link>
 
-        {/* Center - Nav Links */}
         <nav className="sv-topbar-nav">
           <ul className="sv-topbar-nav-list">
             <li>
@@ -68,6 +65,40 @@ function Navbar() {
                 </NavLink>
               </li>
             )}
+            {role === "admin" && (
+              <li>
+                <NavLink
+                  to="/VoterLog"
+                  className={({ isActive }) =>
+                    `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
+                  }
+                >
+                  Voter Log
+                </NavLink>
+              </li>
+            )}
+            {role === "admin" && (
+              <li>
+                <NavLink
+                  to="/ManageCandidates"
+                  className={({ isActive }) =>
+                    `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
+                  }
+                >
+                  Candidates
+                </NavLink>
+              </li>
+            )}
+            <li>
+              <NavLink
+                to="/results"
+                className={({ isActive }) =>
+                  `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
+                }
+              >
+                Results
+              </NavLink>
+            </li>
             {role === "student" && (
               <li>
                 <NavLink
@@ -80,22 +111,9 @@ function Navbar() {
                 </NavLink>
               </li>
             )}
-            {role === "admin" && (
-              <li>
-                <NavLink
-                  to="/voter-log"
-                  className={({ isActive }) =>
-                    `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
-                  }
-                >
-                  Voter Log
-                </NavLink>
-              </li>
-            )}
           </ul>
         </nav>
 
-        {/* Right - Profile Dropdown */}
         <div className="sv-profile-dropdown" ref={dropdownRef}>
           <button
             className="sv-profile-btn"
@@ -110,27 +128,19 @@ function Navbar() {
             <ul className="sv-profile-menu">
               {role === "student" && (
                 <li>
-                  <Link
-                    to="/profile"
-                    className="sv-profile-menu-item"
-                    onClick={() => setDropdownOpen(false)}
-                  >
+                  <Link to="/profile" className="sv-profile-menu-item" onClick={() => setDropdownOpen(false)}>
                     My Profile
                   </Link>
                 </li>
               )}
               <li>
-                <button
-                  className="sv-profile-menu-item sv-profile-menu-logout"
-                  onClick={handleLogout}
-                >
+                <button className="sv-profile-menu-item sv-profile-menu-logout" onClick={handleLogout}>
                   Logout
                 </button>
               </li>
             </ul>
           )}
         </div>
-
       </div>
     </header>
   );

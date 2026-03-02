@@ -23,7 +23,7 @@ function StudentDashboard() {
   ];
 
   return (
-    <div className="sv-app">w
+    <div className="sv-app">
       <Navbar />
 
  
