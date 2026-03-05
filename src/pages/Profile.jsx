@@ -1,34 +1,20 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
+import useProfile from "../hooks/useProfile";
 
 function Profile() {
   const navigate = useNavigate();
   const role = localStorage.getItem("userRole") || "student";
-
-  const [profile, setProfile] = useState({
-    name: "Student User",
-    studentId: "2024-00001",
-    email: "student@gmail.com",
-    course: "BS Information Technology",
-    year: "3rd Year",
-  });
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [form, setForm] = useState({ ...profile });
-  const [saved, setSaved] = useState(false);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSave = (e) => {
-    e.preventDefault();
-    setProfile({ ...form });
-    setIsEditing(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
-  };
+  const {
+    profile,
+    form,
+    isEditing,
+    saved,
+    handleChange,
+    handleSave,
+    handleEdit,
+    handleCancel,
+  } = useProfile();
 
   return (
     <div className="sv-app">
@@ -42,14 +28,14 @@ function Profile() {
           </section>
 
           <div className="sv-profile-card">
-
-            {/* Avatar */}
             <div className="sv-profile-hero">
               <div className="sv-profile-avatar-large">
                 {profile.name.charAt(0)}
               </div>
               <h2>{profile.name}</h2>
-              <span className="sv-candidate-position">{role === "admin" ? "Administrator" : "Student"}</span>
+              <span className="sv-candidate-position">
+                {role === "admin" ? "Administrator" : "Student"}
+              </span>
             </div>
 
             {saved && (
@@ -58,7 +44,6 @@ function Profile() {
               </p>
             )}
 
-            {/* Profile Info or Edit Form */}
             {isEditing ? (
               <form className="sv-form" onSubmit={handleSave}>
                 <div className="sv-form-group">
@@ -83,7 +68,7 @@ function Profile() {
                 </div>
                 <div style={{ display: "flex", gap: "12px" }}>
                   <button type="submit" className="sv-btn sv-btn-primary">Save Changes</button>
-                  <button type="button" className="sv-btn sv-btn-outline" onClick={() => setIsEditing(false)}>Cancel</button>
+                  <button type="button" className="sv-btn sv-btn-outline" onClick={handleCancel}>Cancel</button>
                 </div>
               </form>
             ) : (
@@ -109,7 +94,7 @@ function Profile() {
                   <span className="sv-profile-value">{profile.year}</span>
                 </div>
                 <div style={{ marginTop: "24px", display: "flex", gap: "12px" }}>
-                  <button className="sv-btn sv-btn-primary" onClick={() => setIsEditing(true)}>
+                  <button className="sv-btn sv-btn-primary" onClick={handleEdit}>
                     Edit Profile
                   </button>
                   <button className="sv-btn sv-btn-outline" onClick={() => navigate(-1)}>
