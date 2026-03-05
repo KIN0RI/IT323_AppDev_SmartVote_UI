@@ -48,7 +48,7 @@ function VoterLog() {
               onChange={(e) => setSearch(e.target.value)}
             />
             <div className="sv-voter-filters">
-              {["All", "Voted", "Pending"].map((f) => (
+              {["All", "Voted", "Not Yet Voted"].map((f) => (
                 <button
                   key={f}
                   className={`sv-filter-btn ${filter === f ? "sv-filter-active" : ""}`}
