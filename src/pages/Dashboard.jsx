@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
 import StatCard from "../components/StatCard";
 import MonitoringInsight from "../components/MonitoringInsight";
 import useCandidates from "../hooks/useCandidates";
@@ -147,9 +148,7 @@ function AdminDashboard() {
 
         </div>
 
-        <footer className="sv-footer">
-          USTP SmartVote © 2026 — Database-Driven QR Code Voting System with AI-Assisted Monitoring
-        </footer>
+        <Footer />
       </main>
     </div>
   );

@@ -1,0 +1,51 @@
+@media (max-width: 640px) {
+  .sv-login-card,
+  .sv-verify-card {
+    margin: 16px;
+    padding: 28px 20px;
+  }
+
+  .sv-page-container {
+    padding: 20px 16px 32px;
+  }
+
+  .sv-content { padding: 20px 16px; }
+
+  .sv-header h1 { font-size: 1.8rem; }
+
+  .sv-topbar-nav-list { gap: 0; }
+
+  .sv-topbar-link {
+    padding: 16px 12px;
+    font-size: 0.8rem;
+  }
+
+  .sv-profile-role { display: none; }
+
+  .sv-analysis-grid { grid-template-columns: 1fr; }
+
+  .sv-vote-progress { gap: 4px; }
+
+  .sv-vote-step {
+    width: 48px;
+    height: 48px;
+    font-size: 0.75rem;
+  }
+
+  .sv-table thead { display: none; }
+  .sv-table tbody td {
+    display: block;
+    text-align: right;
+    padding: 10px 16px;
+  }
+  .sv-table tbody td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: 700;
+    color: var(--sv-text-muted);
+  }
+
+  .sv-winners-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .sv-student-action-card { flex-direction: column; }
+}

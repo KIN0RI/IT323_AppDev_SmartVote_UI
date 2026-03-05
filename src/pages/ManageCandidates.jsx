@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
 import useCandidates from "../hooks/useCandidates";
 
 const positions = [
@@ -206,10 +207,7 @@ function ManageCandidates() {
 
         </div>
       </main>
-
-      <footer className="sv-footer">
-        USTP SmartVote © 2026 — Database-Driven QR Code Voting System with AI-Assisted Monitoring
-      </footer>
+     <Footer />
     </div>
   );
 }
