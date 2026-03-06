@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-
+import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import FaceVerification from "./pages/FaceVerification";
@@ -20,23 +19,60 @@ const App = () => (
   <BrowserRouter basename="/IT323_AppDev_SmartVote_UI">
     <Routes>
 
-    
+      
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/FaceVerification" element={<FaceVerification />} />
 
-      <Route path="/StudentDashboard" element={<StudentDashboard />} />
-      <Route path="/vote" element={<Vote />} />
-      <Route path="/VoteAnalysis" element={<VoteAnalysis />} />
-      <Route path="/Profile" element={<Profile />} />
+      <Route path="/StudentDashboard" element={
+        <ProtectedRoute allowedRole="student">
+          <StudentDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/vote" element={
+        <ProtectedRoute allowedRole="student">
+          <Vote />
+        </ProtectedRoute>
+      } />
+      <Route path="/VoteAnalysis" element={
+        <ProtectedRoute allowedRole="student">
+          <VoteAnalysis />
+        </ProtectedRoute>
+      } />
+      <Route path="/Profile" element={
+        <ProtectedRoute allowedRole="student">
+          <Profile />
+        </ProtectedRoute>
+      } />
 
-      <Route path="/Dashboard" element={<AdminDashboard />} />
-      <Route path="/VoterLog" element={<VoterLog />} />
-      <Route path="/ManageCandidates" element={<ManageCandidates />} />
-      <Route path="/ElectionSettings" element={<ElectionSettings />} />
+      <Route path="/Dashboard" element={
+        <ProtectedRoute allowedRole="admin">
+          <AdminDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/VoterLog" element={
+        <ProtectedRoute allowedRole="admin">
+          <VoterLog />
+        </ProtectedRoute>
+      } />
+      <Route path="/ManageCandidates" element={
+        <ProtectedRoute allowedRole="admin">
+          <ManageCandidates />
+        </ProtectedRoute>
+      } />
+      <Route path="/ElectionSettings" element={
+        <ProtectedRoute allowedRole="admin">
+          <ElectionSettings />
+        </ProtectedRoute>
+      } />
 
-      <Route path="/Results" element={<Results />} />
+      <Route path="/Results" element={
+        <ProtectedRoute>
+          <Results />
+        </ProtectedRoute>
+      } />
+
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="*" element={<NotFound />} />
 
