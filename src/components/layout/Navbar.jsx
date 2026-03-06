@@ -24,7 +24,7 @@ function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const dashboardPath = role === "admin" ? "/dashboard" : "/StudentDashboard";
+  const dashboardPath = role === "admin" ? "/Dashboard" : "/StudentDashboard";
   const roleLabel = role === "admin" ? "Admin" : "Student";
 
   const handleLogout = () => {
@@ -43,6 +43,7 @@ function Navbar() {
 
         <nav className="sv-topbar-nav">
           <ul className="sv-topbar-nav-list">
+
             <li>
               <NavLink
                 to={dashboardPath}
@@ -53,6 +54,8 @@ function Navbar() {
                 Dashboard
               </NavLink>
             </li>
+
+
             {role === "student" && (
               <li>
                 <NavLink
@@ -65,6 +68,7 @@ function Navbar() {
                 </NavLink>
               </li>
             )}
+
             {role === "admin" && (
               <li>
                 <NavLink
@@ -89,9 +93,10 @@ function Navbar() {
                 </NavLink>
               </li>
             )}
+
             <li>
               <NavLink
-                to="/results"
+                to="/Results"
                 className={({ isActive }) =>
                   `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
                 }
@@ -99,10 +104,11 @@ function Navbar() {
                 Results
               </NavLink>
             </li>
+
             {role === "student" && (
               <li>
                 <NavLink
-                  to="/profile"
+                  to="/Profile"
                   className={({ isActive }) =>
                     `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
                   }
@@ -111,6 +117,20 @@ function Navbar() {
                 </NavLink>
               </li>
             )}
+
+            {role === "admin" && (
+              <li>
+                <NavLink
+                  to="/ElectionSettings"
+                  className={({ isActive }) =>
+                    `sv-topbar-link ${isActive ? "sv-topbar-link-active" : ""}`
+                  }
+                >
+                  Settings
+                </NavLink>
+              </li>
+            )}
+
           </ul>
         </nav>
 
@@ -128,19 +148,38 @@ function Navbar() {
             <ul className="sv-profile-menu">
               {role === "student" && (
                 <li>
-                  <Link to="/profile" className="sv-profile-menu-item" onClick={() => setDropdownOpen(false)}>
+                  <Link
+                    to="/Profile"
+                    className="sv-profile-menu-item"
+                    onClick={() => setDropdownOpen(false)}
+                  >
                     My Profile
                   </Link>
                 </li>
               )}
+              {role === "admin" && (
+                <li>
+                  <Link
+                    to="/ElectionSettings"
+                    className="sv-profile-menu-item"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    Settings
+                  </Link>
+                </li>
+              )}
               <li>
-                <button className="sv-profile-menu-item sv-profile-menu-logout" onClick={handleLogout}>
+                <button
+                  className="sv-profile-menu-item sv-profile-menu-logout"
+                  onClick={handleLogout}
+                >
                   Logout
                 </button>
               </li>
             </ul>
           )}
         </div>
+
       </div>
     </header>
   );
