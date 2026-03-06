@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+
 import Login from "./pages/login";
 import Register from "./pages/register";
 import FaceVerification from "./pages/FaceVerification";
@@ -10,34 +11,35 @@ import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/Dashboard";
 import VoterLog from "./pages/VoterLog";
 import ManageCandidates from "./pages/ManageCandidates";
+import ElectionSettings from "./pages/ElectionSettings";
 import Results from "./pages/Results";
 import NotFound from "./pages/NotFound";
+import Unauthorized from "./pages/Unauthorized";
 
 const App = () => (
   <BrowserRouter basename="/IT323_AppDev_SmartVote_UI">
     <Routes>
-      
+
+    
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/FaceVerification" element={<FaceVerification />} />
 
-      
       <Route path="/StudentDashboard" element={<StudentDashboard />} />
       <Route path="/vote" element={<Vote />} />
       <Route path="/VoteAnalysis" element={<VoteAnalysis />} />
       <Route path="/Profile" element={<Profile />} />
 
-      
       <Route path="/Dashboard" element={<AdminDashboard />} />
       <Route path="/VoterLog" element={<VoterLog />} />
       <Route path="/ManageCandidates" element={<ManageCandidates />} />
+      <Route path="/ElectionSettings" element={<ElectionSettings />} />
 
-     
       <Route path="/Results" element={<Results />} />
-
-      
+      <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="*" element={<NotFound />} />
+
     </Routes>
   </BrowserRouter>
 );
