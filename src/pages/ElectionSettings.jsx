@@ -3,7 +3,9 @@ import Footer from "../components/layout/Footer";
 import useElectionSettings from "../hooks/useElectionSettings";
 
 function ElectionSettings() {
-  const { settings, saved, handleChange, handleSave, handleToggleStatus } = useElectionSettings();
+  const { settings, saved, loading, handleChange, handleSave, handleToggleStatus } = useElectionSettings();
+
+  if (loading) return <div style={{ padding: "40px", textAlign: "center" }}>Loading settings...</div>;
 
   return (
     <div className="sv-app">
@@ -17,9 +19,7 @@ function ElectionSettings() {
           </section>
 
           {saved && (
-            <div className="sv-settings-success">
-              ✅ Settings saved successfully!
-            </div>
+            <div className="sv-settings-success">✅ Settings saved successfully!</div>
           )}
 
           <div className="sv-settings-status-card">
@@ -34,11 +34,7 @@ function ElectionSettings() {
               <button
                 className="sv-btn sv-btn-primary"
                 onClick={handleToggleStatus}
-                style={settings.status === "open" ? {
-                  background: "#dc2626",
-                  color: "#fff",
-                  border: "none"
-                } : {}}
+                style={settings.status === "open" ? { background: "#dc2626", color: "#fff", border: "none" } : {}}
               >
                 {settings.status === "open" ? "Close Election" : "Open Election"}
               </button>
@@ -51,33 +47,21 @@ function ElectionSettings() {
 
               <div className="sv-settings-group">
                 <label>Election Title</label>
-                <input
-                  name="electionTitle"
-                  value={settings.electionTitle}
-                  onChange={handleChange}
-                  placeholder="Enter election title"
-                />
+                <input name="title" value={settings.title || ""} onChange={handleChange} placeholder="Enter election title" />
               </div>
 
               <div className="sv-settings-row">
                 <div className="sv-settings-group">
-                  <label>Start Date</label>
-                  <input type="date" name="startDate" value={settings.startDate} onChange={handleChange} />
+                  <label>Start Date &amp; Time</label>
+                  <input type="datetime-local" name="start_date"
+                    value={settings.start_date ? settings.start_date.slice(0, 16) : ""}
+                    onChange={handleChange} />
                 </div>
                 <div className="sv-settings-group">
-                  <label>Start Time</label>
-                  <input type="time" name="startTime" value={settings.startTime} onChange={handleChange} />
-                </div>
-              </div>
-
-              <div className="sv-settings-row">
-                <div className="sv-settings-group">
-                  <label>End Date</label>
-                  <input type="date" name="endDate" value={settings.endDate} onChange={handleChange} />
-                </div>
-                <div className="sv-settings-group">
-                  <label>End Time</label>
-                  <input type="time" name="endTime" value={settings.endTime} onChange={handleChange} />
+                  <label>End Date &amp; Time</label>
+                  <input type="datetime-local" name="end_date"
+                    value={settings.end_date ? settings.end_date.slice(0, 16) : ""}
+                    onChange={handleChange} />
                 </div>
               </div>
 
@@ -89,12 +73,9 @@ function ElectionSettings() {
                   <p>Require face verification before voting</p>
                 </div>
                 <label className="sv-toggle">
-                  <input
-                    type="checkbox"
-                    name="requireFaceVerification"
-                    checked={settings.requireFaceVerification}
-                    onChange={handleChange}
-                  />
+                  <input type="checkbox" name="require_face_verification"
+                    checked={settings.require_face_verification || false}
+                    onChange={handleChange} />
                   <span className="sv-toggle-slider" />
                 </label>
               </div>
@@ -105,20 +86,15 @@ function ElectionSettings() {
                   <p>Allow a voter to cast votes more than once</p>
                 </div>
                 <label className="sv-toggle">
-                  <input
-                    type="checkbox"
-                    name="allowMultipleVotes"
-                    checked={settings.allowMultipleVotes}
-                    onChange={handleChange}
-                  />
+                  <input type="checkbox" name="allow_multiple_votes"
+                    checked={settings.allow_multiple_votes || false}
+                    onChange={handleChange} />
                   <span className="sv-toggle-slider" />
                 </label>
               </div>
 
               <div style={{ marginTop: "28px" }}>
-                <button type="submit" className="sv-btn sv-btn-primary">
-                  💾 Save Settings
-                </button>
+                <button type="submit" className="sv-btn sv-btn-primary">💾 Save Settings</button>
               </div>
 
             </form>

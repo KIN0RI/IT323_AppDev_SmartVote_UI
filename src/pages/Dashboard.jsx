@@ -1,54 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import StatCard from "../components/StatCard";
 import MonitoringInsight from "../components/MonitoringInsight";
-import useCandidates from "../hooks/useCandidates";
+import api from "../api";
 import "../styles/Dashboard.css";
 
-const positions = [
-  "President",
-  "Vice President",
-  "Secretary",
-  "Treasurer",
-  "Auditor",
-];
+const positions = ["President", "Vice President", "Secretary", "Treasurer", "Auditor"];
 
 const insights = [
-  {
-    id: 1,
-    title: "Anomaly Detection",
-    status: "No suspicious voting activity detected",
-    confidence: 91,
-  },
-  {
-    id: 2,
-    title: "Turnout Pattern Analysis",
-    status: "Normal participation trend observed",
-    confidence: 84,
-  },
+  { id: 1, title: "Anomaly Detection",        status: "No suspicious voting activity detected", confidence: 91 },
+  { id: 2, title: "Turnout Pattern Analysis", status: "Normal participation trend observed",     confidence: 84 },
 ];
 
 function AdminDashboard() {
-  const { candidates } = useCandidates();
+  const [stats, setStats]           = useState(null);
+  const [loading, setLoading]       = useState(true);
   const [showInsights, setShowInsights] = useState(false);
   const [activePosition, setActivePosition] = useState("President");
 
-  const electionStats = {
-    totalVoters: 2000,
-    votesCast: 1895,
-    remainingVoters: 105,
-  };
+  useEffect(() => {
+    api.get("/dashboard/")
+      .then((res) => setStats(res.data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
-  const turnoutPercent = Math.round(
-    (electionStats.votesCast / electionStats.totalVoters) * 100
-  );
+  if (loading) return <div style={{ padding: "40px", textAlign: "center" }}>Loading dashboard...</div>;
+  if (!stats)  return <div style={{ padding: "40px", textAlign: "center" }}>Failed to load data.</div>;
 
-  const filteredCandidates = candidates.filter(
-    (c) => c.position === activePosition
-  );
-
-  const maxVotes = Math.max(...filteredCandidates.map((c) => c.votes));
+  const filteredCandidates = (stats.candidates_by_position?.[activePosition] || []);
+  const maxVotes = Math.max(...filteredCandidates.map((c) => c.vote_count || 0), 1);
 
   return (
     <div className="sv-app">
@@ -64,24 +46,23 @@ function AdminDashboard() {
           <section className="sv-progress-section">
             <div className="sv-progress-label">
               <span>Voter Turnout</span>
-              <strong>{turnoutPercent}%</strong>
+              <strong>{stats.turnout_percent}%</strong>
             </div>
             <div className="sv-progress-track">
-              <div className="sv-progress-fill" style={{ width: `${turnoutPercent}%` }} />
+              <div className="sv-progress-fill" style={{ width: `${stats.turnout_percent}%` }} />
             </div>
           </section>
 
           <section className="sv-stats">
-            <StatCard icon="👥" title="Total Voters" value={electionStats.totalVoters.toLocaleString()} />
-            <StatCard icon="✅" title="Votes Cast" value={electionStats.votesCast.toLocaleString()} />
-            <StatCard icon="⏳" title="Remaining" value={electionStats.remainingVoters.toLocaleString()} />
+            <StatCard icon="👥" title="Total Voters"  value={stats.total_voters.toLocaleString()} />
+            <StatCard icon="✅" title="Votes Cast"    value={stats.votes_cast.toLocaleString()} />
+            <StatCard icon="⏳" title="Remaining"     value={stats.remaining_voters.toLocaleString()} />
           </section>
 
           <section className="sv-tally-section">
             <div className="sv-tally-header">
               <h2>Candidate Vote Tally</h2>
             </div>
-
             <div className="sv-position-tabs">
               {positions.map((pos) => (
                 <button
@@ -93,15 +74,9 @@ function AdminDashboard() {
                 </button>
               ))}
             </div>
-
             <table className="sv-table">
               <thead>
-                <tr>
-                  <th>Candidate</th>
-                  <th>Position</th>
-                  <th>Progress</th>
-                  <th>Votes</th>
-                </tr>
+                <tr><th>Candidate</th><th>Position</th><th>Progress</th><th>Votes</th></tr>
               </thead>
               <tbody>
                 {filteredCandidates.map((candidate) => (
@@ -114,13 +89,16 @@ function AdminDashboard() {
                       <div className="sv-vote-bar-bg">
                         <div
                           className="sv-vote-bar"
-                          style={{ width: `${Math.round((candidate.votes / maxVotes) * 100)}%` }}
+                          style={{ width: `${Math.round(((candidate.vote_count || 0) / maxVotes) * 100)}%` }}
                         />
                       </div>
                     </td>
-                    <td data-label="Votes" className="sv-vote-count">{candidate.votes}</td>
+                    <td data-label="Votes" className="sv-vote-count">{candidate.vote_count || 0}</td>
                   </tr>
                 ))}
+                {filteredCandidates.length === 0 && (
+                  <tr><td colSpan={4} style={{ textAlign: "center", padding: "24px", color: "#64748b" }}>No candidates yet.</td></tr>
+                )}
               </tbody>
             </table>
           </section>
@@ -135,19 +113,12 @@ function AdminDashboard() {
             {showInsights && (
               <div className="sv-insight-grid">
                 {insights.map((item) => (
-                  <MonitoringInsight
-                    key={item.id}
-                    title={item.title}
-                    status={item.status}
-                    confidence={item.confidence}
-                  />
+                  <MonitoringInsight key={item.id} title={item.title} status={item.status} confidence={item.confidence} />
                 ))}
               </div>
             )}
           </section>
-
         </div>
-
         <Footer />
       </main>
     </div>

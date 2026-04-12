@@ -1,51 +1,49 @@
-import { useState } from "react";
-
-const initialProfile = {
-  name: "Student User",
-  studentId: "2024-00001",
-  email: "student@gmail.com",
-  course: "BS Information Technology",
-  year: "3rd Year",
-};
+import { useState, useEffect } from "react";
+import api from "../api";
 
 function useProfile() {
-  const [profile, setProfile] = useState(initialProfile);
+  const [profile, setProfile]   = useState({
+    full_name: "", student_id: "", email: "", course: "", year_level: "",
+  });
+  const [form, setForm]         = useState({ ...profile });
   const [isEditing, setIsEditing] = useState(false);
-  const [form, setForm] = useState({ ...initialProfile });
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved]       = useState(false);
+  const [loading, setLoading]   = useState(true);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  useEffect(() => {
+    api.get("/auth/profile/")
+      .then((res) => {
+        setProfile(res.data);
+        setForm(res.data);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
-  const handleSave = (e) => {
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSave = async (e) => {
     e.preventDefault();
-    setProfile({ ...form });
-    setIsEditing(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    try {
+      const res = await api.put("/auth/profile/", {
+        full_name:  form.full_name,
+        email:      form.email,
+        course:     form.course,
+        year_level: form.year_level,
+      });
+      setProfile(res.data);
+      setIsEditing(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch {
+      alert("Failed to update profile.");
+    }
   };
 
-  const handleEdit = () => {
-    setForm({ ...profile });
-    setIsEditing(true);
-  };
+  const handleEdit   = () => { setForm({ ...profile }); setIsEditing(true); };
+  const handleCancel = () => { setForm({ ...profile }); setIsEditing(false); };
 
-  const handleCancel = () => {
-    setForm({ ...profile });
-    setIsEditing(false);
-  };
-
-  return {
-    profile,
-    form,
-    isEditing,
-    saved,
-    handleChange,
-    handleSave,
-    handleEdit,
-    handleCancel,
-  };
+  return { profile, form, isEditing, saved, loading, handleChange, handleSave, handleEdit, handleCancel };
 }
 
 export default useProfile;

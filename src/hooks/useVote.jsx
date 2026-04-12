@@ -1,42 +1,38 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useCandidates from "./useCandidates";
+import api from "../api";
 
-const positions = [
-  "President",
-  "Vice President",
-  "Secretary",
-  "Treasurer",
-  "Auditor",
-];
+const positions = ["President", "Vice President", "Secretary", "Treasurer", "Auditor"];
 
 function useVote() {
-  const navigate = useNavigate();
-  const { candidates, castVote } = useCandidates();
-  const [step, setStep] = useState(0);
+  const navigate                    = useNavigate();
+  const { candidates, loading }     = useCandidates();
+  const [step, setStep]             = useState(0);
   const [votedChoices, setVotedChoices] = useState([]);
+  const [voteError, setVoteError]   = useState("");
 
-  const currentPosition = positions[step];
-  const currentCandidates = candidates.filter(
-    (c) => c.position === currentPosition
-  );
+  const currentPosition    = positions[step];
+  const currentCandidates  = candidates.filter((c) => c.position === currentPosition);
 
-  const handleVote = (candidateId) => {
+  const handleVote = async (candidateId) => {
     const chosen = candidates.find((c) => c.id === candidateId);
     if (!chosen) return;
-    castVote(candidateId);
-    const newChoices = [
-      ...votedChoices,
-      { position: chosen.position, candidateName: chosen.name },
-    ];
-    setVotedChoices(newChoices);
-    const nextStep = step + 1;
-    setStep(nextStep);
-
-    if (nextStep >= positions.length) {
-      navigate("/VoteAnalysis", {
-        state: { votes: newChoices, fromVote: true },
-      });
+    setVoteError("");
+    try {
+      await api.post("/vote/", { candidate: candidateId });
+      const newChoices = [
+        ...votedChoices,
+        { position: chosen.position, candidateName: chosen.name },
+      ];
+      setVotedChoices(newChoices);
+      const nextStep = step + 1;
+      setStep(nextStep);
+      if (nextStep >= positions.length) {
+        navigate("/VoteAnalysis", { state: { votes: newChoices, fromVote: true } });
+      }
+    } catch (err) {
+      setVoteError(err.response?.data?.non_field_errors?.[0] || "Failed to cast vote.");
     }
   };
 
@@ -48,12 +44,9 @@ function useVote() {
   };
 
   return {
-    step,
-    positions,
-    currentPosition,
-    currentCandidates,
-    handleVote,
-    handleBack,
+    step, positions, currentPosition,
+    currentCandidates, loading, voteError,
+    handleVote, handleBack,
   };
 }
 
