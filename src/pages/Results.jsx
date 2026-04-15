@@ -1,50 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
-import useCandidates from "../hooks/useCandidates";
+import api from "../api";
 
-const positions = [
-  "President",
-  "Vice President",
-  "Secretary",
-  "Treasurer",
-  "Auditor",
-];
+const positions = ["President", "Vice President", "Secretary", "Treasurer", "Auditor"];
 
 function Results() {
   const navigate = useNavigate();
-  const { candidates } = useCandidates();
-  const [activePosition, setActivePosition] = useState("President");
+  const [resultsByPosition, setResultsByPosition] = useState({});
+  const [activePosition, setActivePosition]       = useState("President");
+  const [loading, setLoading]                     = useState(true);
 
-  const getWinner = (position) => {
-    const positionCandidates = candidates.filter((c) => c.position === position);
-    return positionCandidates.reduce((a, b) => (a.votes > b.votes ? a : b));
-  };
+  useEffect(() => {
+    api.get("/results/")
+      .then((res) => setResultsByPosition(res.data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
-  const getPositionCandidates = (position) => {
-    return candidates
-      .filter((c) => c.position === position)
-      .sort((a, b) => b.votes - a.votes);
-  };
+  if (loading) return <div style={{ padding: "40px", textAlign: "center" }}>Loading results...</div>;
 
-  const totalVotes = candidates
-    .filter((c) => c.position === activePosition)
-    .reduce((sum, c) => sum + c.votes, 0);
+  const activeCandidates = resultsByPosition[activePosition] || [];
+  const totalVotes = activeCandidates.reduce((sum, c) => sum + (c.vote_count || 0), 0);
+  const winner     = activeCandidates[0]; // already sorted by vote_count desc from backend
 
-  const activeCandidates = getPositionCandidates(activePosition);
-  const winner = getWinner(activePosition);
+  const getWinner = (pos) => (resultsByPosition[pos] || [])[0];
 
   return (
     <div className="sv-app">
       <Navbar />
-
       <main className="sv-page" style={{ flex: 1 }}>
         <div className="sv-page-container">
-
           <section className="sv-page-header">
             <h1>🏆 Election Results</h1>
-            <p>Official results for the USTP Student Council Election 2026</p>
+            <p>Official results for the USTP Student Council Election</p>
           </section>
 
           <section className="sv-results-summary">
@@ -52,6 +42,7 @@ function Results() {
             <div className="sv-winners-grid">
               {positions.map((pos) => {
                 const w = getWinner(pos);
+                if (!w) return null;
                 return (
                   <div key={pos} className="sv-winner-card">
                     <div className="sv-winner-crown">👑</div>
@@ -60,7 +51,7 @@ function Results() {
                     </div>
                     <h3>{w.name}</h3>
                     <span className="sv-candidate-position">{pos}</span>
-                    <div className="sv-winner-votes">{w.votes} votes</div>
+                    <div className="sv-winner-votes">{w.vote_count || 0} votes</div>
                   </div>
                 );
               })}
@@ -69,7 +60,6 @@ function Results() {
 
           <section className="sv-results-detail">
             <h2 className="sv-section-title">📊 Detailed Results</h2>
-
             <div className="sv-position-tabs">
               {positions.map((pos) => (
                 <button
@@ -84,22 +74,12 @@ function Results() {
 
             <div className="sv-results-table-wrap">
               {activeCandidates.map((candidate, index) => {
-                const percent = totalVotes > 0
-                  ? Math.round((candidate.votes / totalVotes) * 100)
-                  : 0;
-                const isWinner = candidate.id === winner.id;
-
+                const percent  = totalVotes > 0 ? Math.round(((candidate.vote_count || 0) / totalVotes) * 100) : 0;
+                const isWinner = winner && candidate.id === winner.id;
                 return (
-                  <div
-                    key={candidate.id}
-                    className={`sv-result-row ${isWinner ? "sv-result-winner" : ""}`}
-                  >
-                    <div className="sv-result-rank">
-                      {isWinner ? "👑" : `#${index + 1}`}
-                    </div>
-                    <div className="sv-candidate-avatar sv-avatar-sm">
-                      {candidate.name.charAt(0)}
-                    </div>
+                  <div key={candidate.id} className={`sv-result-row ${isWinner ? "sv-result-winner" : ""}`}>
+                    <div className="sv-result-rank">{isWinner ? "👑" : `#${index + 1}`}</div>
+                    <div className="sv-candidate-avatar sv-avatar-sm">{candidate.name.charAt(0)}</div>
                     <div className="sv-result-info">
                       <div className="sv-result-name">
                         {candidate.name}
@@ -107,30 +87,25 @@ function Results() {
                       </div>
                       <div className="sv-result-bar-wrap">
                         <div className="sv-result-bar">
-                          <div
-                            className={`sv-result-bar-fill ${isWinner ? "sv-bar-winner" : ""}`}
-                            style={{ width: `${percent}%` }}
-                          />
+                          <div className={`sv-result-bar-fill ${isWinner ? "sv-bar-winner" : ""}`}
+                            style={{ width: `${percent}%` }} />
                         </div>
                         <span className="sv-result-percent">{percent}%</span>
                       </div>
                     </div>
-                    <div className="sv-result-votes">{candidate.votes} votes</div>
+                    <div className="sv-result-votes">{candidate.vote_count || 0} votes</div>
                   </div>
                 );
               })}
+              {activeCandidates.length === 0 && (
+                <p style={{ textAlign: "center", padding: "32px", color: "#64748b" }}>No results yet.</p>
+              )}
             </div>
           </section>
 
           <div style={{ textAlign: "center", marginTop: "32px" }}>
-            <button
-              className="sv-btn sv-btn-outline"
-              onClick={() => navigate(-1)}
-            >
-              ← Go Back
-            </button>
+            <button className="sv-btn sv-btn-outline" onClick={() => navigate(-1)}>← Go Back</button>
           </div>
-
         </div>
       </main>
       <Footer />

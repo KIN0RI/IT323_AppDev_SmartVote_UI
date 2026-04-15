@@ -3,93 +3,74 @@ import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import useCandidates from "../hooks/useCandidates";
 
-const positions = [
-  "President",
-  "Vice President",
-  "Secretary",
-  "Treasurer",
-  "Auditor",
-];
-
-const emptyForm = { name: "", position: "President" };
+const positions  = ["President", "Vice President", "Secretary", "Treasurer", "Auditor"];
+const emptyForm  = { name: "", position: "President", course: "", year_level: "" };
 
 function ManageCandidates() {
-  const { candidates } = useCandidates();
-  const [localCandidates, setLocalCandidates] = useState(candidates);
+  const { candidates, loading, addCandidate, updateCandidate, deleteCandidate } = useCandidates();
   const [activePosition, setActivePosition] = useState("President");
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState(emptyForm);
-  const [editId, setEditId] = useState(null);
-  const [saved, setSaved] = useState(false);
+  const [form, setForm]         = useState(emptyForm);
+  const [editId, setEditId]     = useState(null);
+  const [saved, setSaved]       = useState(false);
+  const [error, setError]       = useState("");
 
-  const filtered = localCandidates.filter((c) => c.position === activePosition);
+  const filtered = candidates.filter((c) => c.position === activePosition);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editId !== null) {
-      setLocalCandidates((prev) =>
-        prev.map((c) => (c.id === editId ? { ...c, ...form } : c))
-      );
-      setEditId(null);
-    } else {
-      const newCandidate = {
-        id: Date.now(),
-        name: form.name,
-        position: form.position,
-        votes: 0,
-      };
-      setLocalCandidates((prev) => [...prev, newCandidate]);
+    setError("");
+    try {
+      if (editId !== null) {
+        await updateCandidate(editId, form);
+        setEditId(null);
+      } else {
+        await addCandidate(form);
+      }
+      setForm(emptyForm);
+      setShowForm(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch {
+      setError("Failed to save candidate. Please try again.");
     }
-    setForm(emptyForm);
-    setShowForm(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
   };
 
   const handleEdit = (candidate) => {
-    setForm({ name: candidate.name, position: candidate.position });
+    setForm({ name: candidate.name, position: candidate.position,
+              course: candidate.course || "", year_level: candidate.year_level || "" });
     setEditId(candidate.id);
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    setLocalCandidates((prev) => prev.filter((c) => c.id !== id));
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this candidate?")) return;
+    try {
+      await deleteCandidate(id);
+    } catch {
+      alert("Failed to delete candidate.");
+    }
   };
 
-  const handleCancel = () => {
-    setForm(emptyForm);
-    setEditId(null);
-    setShowForm(false);
-  };
+  const handleCancel = () => { setForm(emptyForm); setEditId(null); setShowForm(false); };
 
   return (
     <div className="sv-app">
       <Navbar />
-
       <main className="sv-page">
         <div className="sv-page-container">
-
           <section className="sv-page-header">
             <h1>👥 Manage Candidates</h1>
             <p>Add, edit, or remove candidates for each position</p>
           </section>
 
-          {saved && (
-            <p style={{ color: "#16a34a", fontWeight: 600, marginBottom: "16px" }}>
-              ✅ Candidates updated successfully!
-            </p>
-          )}
+          {saved  && <p style={{ color: "#16a34a", fontWeight: 600, marginBottom: "16px" }}>✅ Candidates updated successfully!</p>}
+          {error  && <p style={{ color: "#dc2626", fontWeight: 500, marginBottom: "16px" }}>{error}</p>}
 
           {!showForm && (
-            <button
-              className="sv-btn sv-btn-primary"
-              onClick={() => setShowForm(true)}
-              style={{ marginBottom: "24px" }}
-            >
+            <button className="sv-btn sv-btn-primary" onClick={() => setShowForm(true)} style={{ marginBottom: "24px" }}>
               + Add Candidate
             </button>
           )}
@@ -102,35 +83,25 @@ function ManageCandidates() {
               <form className="sv-form" onSubmit={handleSubmit}>
                 <div className="sv-form-group">
                   <label style={{ color: "#1e293b" }}>Full Name</label>
-                  <input
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    placeholder="Enter candidate name"
-                    required
-                  />
+                  <input name="name" value={form.name} onChange={handleChange} placeholder="Enter candidate name" required />
                 </div>
                 <div className="sv-form-group">
                   <label style={{ color: "#1e293b" }}>Position</label>
-                  <select
-                    name="position"
-                    value={form.position}
-                    onChange={handleChange}
-                    className="sv-select"
-                    style={{ width: "100%" }}
-                  >
-                    {positions.map((p) => (
-                      <option key={p} value={p}>{p}</option>
-                    ))}
+                  <select name="position" value={form.position} onChange={handleChange} className="sv-select" style={{ width: "100%" }}>
+                    {positions.map((p) => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
+                <div className="sv-form-group">
+                  <label style={{ color: "#1e293b" }}>Course</label>
+                  <input name="course" value={form.course} onChange={handleChange} placeholder="e.g. BS Information Technology" />
+                </div>
+                <div className="sv-form-group">
+                  <label style={{ color: "#1e293b" }}>Year Level</label>
+                  <input name="year_level" value={form.year_level} onChange={handleChange} placeholder="e.g. 3rd Year" />
+                </div>
                 <div style={{ display: "flex", gap: "12px" }}>
-                  <button type="submit" className="sv-btn sv-btn-primary">
-                    {editId ? "Save Changes" : "Add Candidate"}
-                  </button>
-                  <button type="button" className="sv-btn sv-btn-outline" onClick={handleCancel}>
-                    Cancel
-                  </button>
+                  <button type="submit" className="sv-btn sv-btn-primary">{editId ? "Save Changes" : "Add Candidate"}</button>
+                  <button type="button" className="sv-btn sv-btn-outline" onClick={handleCancel}>Cancel</button>
                 </div>
               </form>
             </div>
@@ -143,71 +114,49 @@ function ManageCandidates() {
                 className={`sv-position-tab ${activePosition === pos ? "sv-tab-active" : ""}`}
                 onClick={() => setActivePosition(pos)}
               >
-                {pos} ({localCandidates.filter((c) => c.position === pos).length})
+                {pos} ({candidates.filter((c) => c.position === pos).length})
               </button>
             ))}
           </div>
 
           <section className="sv-tally-section">
-            <table className="sv-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Position</th>
-                  <th>Votes</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((candidate, index) => (
-                  <tr key={candidate.id}>
-                    <td>{index + 1}</td>
-                    <td className="sv-candidate-name">{candidate.name}</td>
-                    <td>
-                      <span className="sv-candidate-position">{candidate.position}</span>
-                    </td>
-                    <td>{candidate.votes}</td>
-                    <td>
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <button
-                          className="sv-btn sv-btn-outline"
-                          style={{ padding: "6px 14px", fontSize: "0.8rem" }}
-                          onClick={() => handleEdit(candidate)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="sv-btn"
-                          style={{
-                            padding: "6px 14px",
-                            fontSize: "0.8rem",
-                            background: "#fee2e2",
-                            color: "#dc2626",
-                            border: "1px solid #fecaca"
-                          }}
-                          onClick={() => handleDelete(candidate.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {filtered.length === 0 && (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: "center", color: "#64748b", padding: "32px" }}>
+            {loading ? (
+              <p style={{ textAlign: "center", padding: "32px", color: "#64748b" }}>Loading candidates...</p>
+            ) : (
+              <table className="sv-table">
+                <thead>
+                  <tr><th>#</th><th>Name</th><th>Position</th><th>Votes</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                  {filtered.map((candidate, index) => (
+                    <tr key={candidate.id}>
+                      <td>{index + 1}</td>
+                      <td className="sv-candidate-name">{candidate.name}</td>
+                      <td><span className="sv-candidate-position">{candidate.position}</span></td>
+                      <td>{candidate.vote_count || 0}</td>
+                      <td>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <button className="sv-btn sv-btn-outline" style={{ padding: "6px 14px", fontSize: "0.8rem" }}
+                            onClick={() => handleEdit(candidate)}>Edit</button>
+                          <button className="sv-btn" style={{ padding: "6px 14px", fontSize: "0.8rem",
+                            background: "#fee2e2", color: "#dc2626", border: "1px solid #fecaca" }}
+                            onClick={() => handleDelete(candidate.id)}>Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filtered.length === 0 && (
+                    <tr><td colSpan={5} style={{ textAlign: "center", color: "#64748b", padding: "32px" }}>
                       No candidates for this position yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                    </td></tr>
+                  )}
+                </tbody>
+              </table>
+            )}
           </section>
-
         </div>
       </main>
-     <Footer />
+      <Footer />
     </div>
   );
 }
