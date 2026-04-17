@@ -67,11 +67,6 @@ function LoginForm({ onLogin }) {
           placeholder="Enter your password"
           required disabled={isLoading}
         />
-        <label className="sv-checkbox-label">
-          <input type="checkbox" checked={showPassword}
-            onChange={(e) => setShowPassword(e.target.checked)} />
-          Show password
-        </label>
       </div>
 
       <div className="sv-form-group">
