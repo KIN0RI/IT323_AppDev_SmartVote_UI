@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../api";
 
 function useFaceVerification() {
   const navigate = useNavigate();
@@ -29,19 +30,51 @@ function useFaceVerification() {
     }
   }, []);
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
+    const video = videoRef.current;
+    if (!video || video.videoWidth === 0) {
+      setStatus("error");
+      setMessage("Camera not ready. Please start the camera first.");
+      return;
+    }
+
     setStatus("verifying");
-    setMessage("Verifying identity...");
-    setTimeout(() => {
-      setStatus("success");
-      setMessage("Identity verified! Redirecting to dashboard...");
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
+    setMessage("Scanning your face...");
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d").drawImage(video, 0, 0);
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        setStatus("error");
+        setMessage("Failed to capture image. Please try again.");
+        return;
       }
-      setTimeout(() => {
-        navigate(role === "admin" ? "/Dashboard" : "/StudentDashboard");
-      }, 1500);
-    }, 2000);
+      const formData = new FormData();
+      formData.append("photo", blob, "frame.jpg");
+      try {
+        const res = await api.post("/face/verify/", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        if (res.data.verified) {
+          setStatus("success");
+          setMessage(`Verified! ${res.data.confidence}% confidence. Redirecting...`);
+          if (stream) stream.getTracks().forEach((track) => track.stop());
+          setTimeout(() => {
+            navigate(role === "admin" ? "/Dashboard" : "/StudentDashboard");
+          }, 1500);
+        } else {
+          setStatus("error");
+          setMessage(`Not recognized (${res.data.confidence}% match). Please try again.`);
+        }
+      } catch (err) {
+        const detail = err.response?.data?.detail || "Verification failed. Please try again.";
+        setStatus("error");
+        setMessage(detail);
+      }
+    }, "image/jpeg");
   };
 
   useEffect(() => {

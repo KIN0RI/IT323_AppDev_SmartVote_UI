@@ -8,7 +8,11 @@ function Login() {
   const handleLogin = (email, _password, role) => {
     console.log("Logging in:", email, "as", role);
     localStorage.setItem("userRole", role);
-    navigate("/FaceVerification");
+    if (role === "admin") {
+      navigate("/Dashboard");
+    } else {
+      navigate("/FaceVerification");
+    }
   };
 
   return (
