@@ -9,6 +9,11 @@ function Login() {
     console.log("Logging in:", email, "as", role);
     localStorage.setItem("userRole", role);
     navigate("/FaceVerification");
+    if (role === "admin") {
+    navigate("/Dashboard");
+  } else {
+    navigate("/RegisterFace");
+  }
   };
 
   return (

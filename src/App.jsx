@@ -14,6 +14,7 @@ import ElectionSettings from "./pages/ElectionSettings";
 import Results from "./pages/Results";
 import NotFound from "./pages/NotFound";
 import Unauthorized from "./pages/Unauthorized";
+import RegisterFace from "./pages/RegisterFace";
 
 const App = () => (
   <BrowserRouter basename="/IT323_AppDev_SmartVote_UI">
@@ -72,6 +73,13 @@ const App = () => (
           <Results />
         </ProtectedRoute>
       } />
+      
+      <Route path="/RegisterFace" element={
+        <ProtectedRoute allowedRole="student">
+          <RegisterFace />
+        </ProtectedRoute>
+      } />
+
 
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="*" element={<NotFound />} />
