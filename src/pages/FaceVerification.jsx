@@ -80,8 +80,14 @@ function FaceVerification() {
       }
     } catch (err) {
       const detail = err.response?.data?.detail || "Verification failed. Please try again.";
-      setStatus("error");
-      setMessage(detail);
+      if (detail.toLowerCase().includes("no registered face")) {
+        setStatus("error");
+        setMessage("No face registered. Redirecting to face registration...");
+        setTimeout(() => navigate("/RegisterFace"), 2000);
+      } else {
+        setStatus("error");
+        setMessage(detail);
+      }
     }
   };
 

@@ -17,7 +17,7 @@ import Unauthorized from "./pages/Unauthorized";
 import RegisterFace from "./pages/RegisterFace";
 
 const App = () => (
-  <BrowserRouter basename="/IT323_AppDev_SmartVote_UI">
+  <BrowserRouter >
     <Routes>
 
       

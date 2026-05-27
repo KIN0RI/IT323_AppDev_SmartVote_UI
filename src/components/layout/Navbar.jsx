@@ -36,7 +36,7 @@ function Navbar() {
   return (
     <header className="sv-topbar">
       <div className="sv-topbar-inner">
-        <Link to="/" className="sv-logo-link">
+        <Link to={dashboardPath} className="sv-logo-link">
           <img src={logo} alt="USTP Logo" className="sv-logo-img" />
           <span className="sv-logo-text">USTP SmartVote</span>
         </Link>

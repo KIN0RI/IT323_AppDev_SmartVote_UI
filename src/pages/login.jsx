@@ -5,15 +5,12 @@ import logo from "../assets/logo.png";
 function Login() {
   const navigate = useNavigate();
 
-  const handleLogin = (email, _password, role) => {
-    console.log("Logging in:", email, "as", role);
-    localStorage.setItem("userRole", role);
-    navigate("/FaceVerification");
+  const handleLogin = (_email, _password, role) => {
     if (role === "admin") {
-    navigate("/Dashboard");
-  } else {
-    navigate("/RegisterFace");
-  }
+      navigate("/Dashboard");
+    } else {
+      navigate("/FaceVerification");
+    }
   };
 
   return (
