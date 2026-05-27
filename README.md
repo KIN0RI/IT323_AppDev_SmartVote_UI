@@ -1,16 +1,62 @@
-# React + Vite
+# USTP SmartVote — Web Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React web app for the USTP SmartVote student election system with face biometric verification.
 
-Currently, two official plugins are available:
+## Deployment
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Platform | URL |
+|----------|-----|
+| Web App (Vercel) | https://it-323-app-dev-smart-vote-ui.vercel.app/ |
+| Backend API | https://it323-appdev-smartvote-fastapi.onrender.com |
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| | |
+|-|-|
+| Framework | React 19, Vite |
+| Routing | React Router v6 |
+| HTTP | Axios |
+| Deployment | Vercel |
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Student registration and login with email + face verification
+- Admin login (no face verification required)
+- Cast votes per position (President, VP, Secretary, Treasurer, Auditor)
+- View live election results
+- Admin dashboard — voter turnout, candidate tallies, voter log
+- Manage candidates and election settings (open/close)
+
+## Local Development
+
+```bash
+npm install
+npm run dev
+```
+
+The app connects to `http://127.0.0.1:8001/api` by default.
+
+To point to the deployed backend instead, create a `.env.local` file:
+
+```
+VITE_API_URL=https://it323-appdev-smartvote-fastapi.onrender.com/api
+```
+
+## Deployment (Vercel)
+
+1. Connect this repository to Vercel
+2. Set the root directory to this folder
+3. Add environment variable:
+   - `VITE_API_URL` → `https://it323-appdev-smartvote-fastapi.onrender.com/api`
+4. A `vercel.json` is included for SPA routing support
+
+## Group Members
+
+- Nepthalie Brynt R. Asinero
+- Dan Ivan E. Labin
+- Christian Paul L. Bahian
+- Ronald E. Yu
+
+## Course
+
+IT323 - Application Development and Emerging Technologies
