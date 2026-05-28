@@ -1,12 +1,12 @@
 # USTP SmartVote — Web Frontend
 
-React web app for the USTP SmartVote student election system with face biometric verification.
+React web frontend for the USTP SmartVote student election system. Provides the admin dashboard and student voting interface.
 
 ## Deployment
 
 | Platform | URL |
 |----------|-----|
-| Web App (Vercel) | https://it-323-app-dev-smart-vote-ui.vercel.app/ |
+| Web App | https://kinori.github.io/IT323_AppDev_SmartVote_UI |
 | Backend API | https://it323-appdev-smartvote-fastapi.onrender.com |
 
 ## Tech Stack
@@ -16,39 +16,36 @@ React web app for the USTP SmartVote student election system with face biometric
 | Framework | React 19, Vite |
 | Routing | React Router v6 |
 | HTTP | Axios |
-| Deployment | Vercel |
-
-## Features
-
-- Student registration and login with email + face verification
-- Admin login (no face verification required)
-- Cast votes per position (President, VP, Secretary, Treasurer, Auditor)
-- View live election results
-- Admin dashboard — voter turnout, candidate tallies, voter log
-- Manage candidates and election settings (open/close)
 
 ## Local Development
 
+**Prerequisites:** Node.js 18+
+
+1. Install dependencies:
 ```bash
 npm install
+```
+
+2. Start the dev server:
+```bash
 npm run dev
 ```
 
-The app connects to `http://127.0.0.1:8001/api` by default.
+The app will be available at `http://localhost:5173`.
 
-To point to the deployed backend instead, create a `.env.local` file:
+It connects to `https://it323-appdev-smartvote-fastapi.onrender.com/api` by default. To use a local backend, update the base URL in your API config file.
 
+## Build
+
+```bash
+npm run build
 ```
-VITE_API_URL=https://it323-appdev-smartvote-fastapi.onrender.com/api
+
+## Deploy to GitHub Pages
+
+```bash
+npm run deploy
 ```
-
-## Deployment (Vercel)
-
-1. Connect this repository to Vercel
-2. Set the root directory to this folder
-3. Add environment variable:
-   - `VITE_API_URL` → `https://it323-appdev-smartvote-fastapi.onrender.com/api`
-4. A `vercel.json` is included for SPA routing support
 
 ## Group Members
 
